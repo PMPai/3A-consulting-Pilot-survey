@@ -72,7 +72,8 @@
 │       ├── dashboard.html        顧問端總覽（樹狀導覽 + 搜尋 + 狀態統計）
 │       └── detail.html           顧問端詳情（4 種圖表 + ROI 試算 + 門檻檢核 + 分支樹 + 結論）
 │
-├── start.bat                     一鍵啟動（建 venv、裝套件、開瀏覽器）
+├── start.bat                     Windows 一鍵啟動
+├── start.sh                      macOS / Linux 一鍵啟動
 └── README.md                      本文件
 ```
 
@@ -106,21 +107,30 @@
 
 ## 啟動方式
 
-### 方式一：一鍵啟動（推薦）
+### Windows
 
 ```bat
 雙擊 start.bat
 ```
 
-`start.bat` 會自動完成：
+### macOS / Linux
+
+```bash
+chmod +x start.sh    # 首次執行需加上執行權限
+./start.sh
+```
+
+### 啟動腳本會自動完成
+
 1. 檢查 Python 3.9+ 是否安裝
 2. 建立虛擬環境 `backend/.venv`（首次執行）
 3. 安裝相依套件（首次執行）
 4. 啟動 uvicorn 伺服器於 `http://localhost:3535`
 5. 自動開啟瀏覽器
 
-### 方式二：手動啟動
+### 手動啟動
 
+**Windows:**
 ```bat
 cd backend
 python -m venv .venv
@@ -129,10 +139,19 @@ pip install -r requirements.txt
 python -m uvicorn main:app --host 0.0.0.0 --port 3535
 ```
 
+**macOS / Linux:**
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python -m uvicorn main:app --host 0.0.0.0 --port 3535
+```
+
 ### 前置需求
 
-- **Python 3.9+**（[下載](https://www.python.org/downloads/)）
-- 任何現代瀏覽器（Chrome / Edge / Firefox）
+- **Python 3.9+**（[下載](https://www.python.org/downloads/)；macOS 也可用 `brew install python`）
+- 任何現代瀏覽器（Chrome / Edge / Firefox / Safari）
 - 無需外網連線（CDN 載入 Bootstrap/Chart.js 需首次有網路，之後可離線）
 
 ### 相依套件
@@ -442,10 +461,12 @@ backend/uploads/       ← 上傳的 SOP / 流程圖實體檔案
 A: 請安裝 Python 3.9+ 並確認安裝時勾選「Add to PATH」。
 
 ### Q: port 3535 被占用？
-A: 修改 `start.bat` 中的 `--port 3535` 為其他埠號，或執行 `netstat -ano | findstr :3535` 找出占用程序。
+A: 修改 `start.bat` 或 `start.sh` 中的 `--port 3535` 為其他埠號。
+   - Windows: `netstat -ano | findstr :3535`
+   - macOS: `lsof -i :3535`
 
 ### Q: 中文顯示亂碼？
-A: 確保瀏覽器編碼為 UTF-8。`start.bat` 已內建 `chcp 65001` 切換至 UTF-8。
+A: 確保瀏覽器編碼為 UTF-8。`start.bat` 已內建 `chcp 65001` 切換至 UTF-8。macOS 預設即為 UTF-8。
 
 ### Q: 評分制能否改回填數字？
 A: 可。修改 `frontend/client/survey.html` 將 `.rating` 元件改為 `input[type=number]`，並調整 `backend/routers/roi.py` 的計算邏輯即可。
