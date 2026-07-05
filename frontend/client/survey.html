@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 導入需求評估問卷 — Stage 1 部門調研</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+  :root{--brand:#2563eb;--brand-dark:#1e40af;--soft:#f1f5f9;--ok:#16a34a;--warn:#f59e0b;--bad:#dc2626;}
+  body{background:var(--soft);font-family:"Microsoft JhengHei","PingFang TC",system-ui,sans-serif;color:#0f172a;}
+  .topbar{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;}
+  .topbar small{opacity:.85;}
+  .step-nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid #e2e8f0;}
+  .step-nav .nav-link{border-radius:999px;padding:.4rem .9rem;font-size:.85rem;color:#475569;}
+  .step-nav .nav-link.active{background:var(--brand);color:#fff;}
+  .step-nav .nav-link.done{background:#dcfce7;color:var(--ok);font-weight:600;}
+  .section{background:#fff;border-radius:14px;padding:1.6rem 1.8rem;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:1.4rem;}
+  .section h4{color:var(--brand-dark);border-left:4px solid var(--brand);padding-left:.6rem;margin-bottom:.4rem;}
+  .section .lead-q{color:#64748b;font-size:.95rem;margin-bottom:1rem;}
+  .hint{font-size:.82rem;color:#64748b;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:8px;padding:.55rem .8rem;margin-top:.4rem;}
+  .hint .ex{color:var(--brand);}
+  .rating{display:inline-flex;flex-direction:row-reverse;gap:.1rem;}
+  .rating input{display:none;}
+  .rating label{font-size:1.5rem;color:#cbd5e1;cursor:pointer;transition:.15s;}
+  .rating label:hover,.rating label:hover~label,.rating input:checked+label{color:#f59e0b;}
+  .rating-text{font-size:.82rem;color:#64748b;margin-top:.2rem;}
+  .process-card{border:1px solid #e2e8f0;border-radius:12px;background:#fcfcfd;padding:1rem 1.2rem;margin-bottom:1rem;}
+  .process-card .card-title{font-weight:600;color:var(--brand-dark);}
+  .step-row{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:.7rem .9rem;margin-bottom:.5rem;}
+  .upload-box{border:2px dashed #cbd5e1;border-radius:10px;padding:1.2rem;text-align:center;color:#64748b;background:#f8fafc;cursor:pointer;transition:.15s;}
+  .upload-box:hover{border-color:var(--brand);color:var(--brand);background:#eff6ff;}
+  .progress-bar{background:var(--brand);}
+  .btn-brand{background:var(--brand);color:#fff;}
+  .btn-brand:hover{background:var(--brand-dark);color:#fff;}
+  .btn-ghost{background:#fff;border:1px solid #cbd5e1;color:#475569;}
+  .judgment-chips .btn{border-radius:999px;font-size:.82rem;}
+  .judgment-chips .btn.active{background:var(--brand);color:#fff;border-color:var(--brand);}
+  .saved-tag{font-size:.75rem;color:var(--ok);}
+  [hidden]{display:none!important;}
+  .small-q{font-weight:600;color:#334155;margin-bottom:.3rem;}
+  .footer-bar{position:sticky;bottom:0;background:rgba(255,255,255,.95);backdrop-filter:blur(6px);border-top:1px solid #e2e8f0;padding:.8rem 0;}
+</style>
+</head>
+<body>
+
+<div class="topbar py-3 px-4 mb-3">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h5 class="mb-0"><i class="bi bi-clipboard-check me-2"></i>AI 導入需求評估問卷</h5>
+      <small>Stage 1 部門調研　|　預計 30-45 分鐘　|　無標準答案，請依直覺作答</small>
+    </div>
+    <div class="text-end">
+      <div class="small opacity-75">填寫進度</div>
+      <div class="progress" style="width:180px;height:8px;">
+        <div class="progress-bar" id="progBar" style="width:0%"></div>
+      </div>
+      <div class="saved-tag mt-1"><i class="bi bi-check-circle"></i> 系統會自動暫存</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="step-nav py-2 mb-4 rounded">
+    <ul class="nav nav-pills justify-content-center gap-2 flex-wrap" id="stepNav">
+      <li class="nav-item"><button class="nav-link active" data-step="1">1.基本資料</button></li>
+      <li class="nav-item"><button class="nav-link" data-step="2">2.工作流程</button></li>
+      <li class="nav-item"><button class="nav-link" data-step="3">3.流程詳述</button></li>
+      <li class="nav-item"><button class="nav-link" data-step="4">4.上傳附件</button></li>
+      <li class="nav-item"><button class="nav-link" data-step="5">5.錯誤成本</button></li>
+      <li class="nav-item"><button class="nav-link" data-step="6">6.機會成本</button></li>
+      <li class="nav-item"><button class="nav-link" data-step="7">7.AI 準備度</button></li>
+      <li class="nav-item"><button class="nav-link" data-step="8">8.期望</button></li>
+      <li class="nav-item"><button class="nav-link" data-step="9">9.送出</button></li>
+    </ul>
+  </div>
+
+  <!-- STEP 1 基本資料 -->
+  <section class="section" data-section="1">
+    <h4>1. 先認識你們</h4>
+    <p class="lead-q">這一頁只需要基本資料，幫助我們了解填寫者的背景。不用擔心，沒有對錯答案。</p>
+
+    <div class="row g-3">
+      <div class="col-md-6"><label class="form-label">公司名稱</label><input class="form-control" placeholder="例：ABC 科技股份有限公司"></div>
+      <div class="col-md-6"><label class="form-label">部門名稱</label><input class="form-control" placeholder="例：財務部 / 業務部"></div>
+      <div class="col-md-4"><label class="form-label">部門人數</label><input type="number" class="form-control" placeholder="例：12"></div>
+      <div class="col-md-4"><label class="form-label">受訪者姓名</label><input class="form-control"></div>
+      <div class="col-md-4"><label class="form-label">職稱</label><input class="form-control" placeholder="例：財務主管"></div>
+      <div class="col-md-4"><label class="form-label">任職年資（年）</label><input type="number" class="form-control"></div>
+      <div class="col-md-4"><label class="form-label">訪談日期</label><input type="date" class="form-control"></div>
+      <div class="col-md-4"><label class="form-label">顧問名稱</label><input class="form-control" placeholder="負責本次評估的顧問"></div>
+      <div class="col-12"><label class="form-label">主要職責（1-2 句話描述這個部門在幹嘛）</label><textarea class="form-control" rows="2" placeholder="例：負責每個月對帳、開發票、做出收支報表給老闆看"></textarea></div>
+    </div>
+  </section>
+
+  <!-- STEP 2 工作流程盤點 -->
+  <section class="section" data-section="2">
+    <h4>2. 部門內最花時間的事</h4>
+    <p class="lead-q">請列出部門裡 3-5 個「最常做、最花時間、或最重複」的工作。不用精算數字，給個感覺就好。我們會在下一步驟逐一深入了解。</p>
+
+    <div id="processList">
+      <div class="process-card" data-pid="1">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="card-title"><i class="bi bi-list-task me-1"></i>工作流程 #1</div>
+          <button class="btn btn-sm btn-ghost btn-remove-process" hidden><i class="bi bi-trash"></i></button>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label">這件事叫什麼名字？</label><input class="form-control" placeholder="例：每週銷售報表彙整"></div>
+          <div class="col-md-6"><label class="form-label">做完之後給誰用？要做什麼？</label><input class="form-control" placeholder="例：給老闆看每週業績"></div>
+          <div class="col-md-6"><label class="form-label">多久做一次？</label>
+            <select class="form-select">
+              <option>每天</option><option>每週</option><option>每月</option><option>不定期</option><option>其他</option>
+            </select>
+          </div>
+          <div class="col-md-6"><label class="form-label">做這件事要動到哪些系統或工具？</label><input class="form-control" placeholder="例：Excel、ERP、紙本單據"></div>
+
+          <div class="col-12">
+            <div class="small-q">這件事每個月大概花多少時間？</div>
+            <div class="rating" data-name="p1_hours">
+              <input type="radio" name="p1_hours" id="p1_h5" value="5"><label for="p1_h5">★</label>
+              <input type="radio" name="p1_hours" id="p1_h4" value="4"><label for="p1_h4">★</label>
+              <input type="radio" name="p1_hours" id="p1_h3" value="3"><label for="p1_h3">★</label>
+              <input type="radio" name="p1_hours" id="p1_h2" value="2"><label for="p1_h2">★</label>
+              <input type="radio" name="p1_hours" id="p1_h1" value="1"><label for="p1_h1">★</label>
+            </div>
+            <div class="hint"><i class="bi bi-lightbulb"></i> 給個感覺就好：<span class="ex">1=很少（一個月 10 小時內）</span>　3=中等（每月約 50 小時）　<span class="ex">5=很多（每月 80 小時以上）</span></div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="small-q">負責做這件事的人，薪水大概是什麼等級？</div>
+            <div class="rating" data-name="p1_rate">
+              <input type="radio" name="p1_rate" id="p1_r5" value="5"><label for="p1_r5">★</label>
+              <input type="radio" name="p1_rate" id="p1_r4" value="4"><label for="p1_r4">★</label>
+              <input type="radio" name="p1_rate" id="p1_r3" value="3"><label for="p1_r3">★</label>
+              <input type="radio" name="p1_rate" id="p1_r2" value="2"><label for="p1_r2">★</label>
+              <input type="radio" name="p1_rate" id="p1_r1" value="1"><label for="p1_r1">★</label>
+            </div>
+            <div class="hint">1=工讀生時薪　3=一般職員　5=資深主管</div>
+          </div>
+
+          <div class="col-md-6"><label class="form-label">資料現在長什麼樣？</label>
+            <select class="form-select">
+              <option>都是整齊的 Excel / 資料庫</option>
+              <option>半結構（PDF、Email 為主）</option>
+              <option>還在用紙本</option>
+              <option>口頭/聊天訊息</option>
+            </select>
+          </div>
+
+          <div class="col-12"><label class="form-label">這件事最讓你頭痛的地方？（自由描述）</label><textarea class="form-control" rows="2" placeholder="例：每週要從三個系統撈資料再手動合併，很容易漏掉"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-ghost" id="addProcess"><i class="bi bi-plus-lg me-1"></i>再加一個工作流程</button>
+  </section>
+
+  <!-- STEP 3 流程詳述 -->
+  <section class="section" data-section="3" hidden>
+    <h4>3. 這件事是怎麼做的？（流程詳述）</h4>
+    <p class="lead-q">這是整份問卷最關鍵的一頁。請把每個工作流程「一步一步」拆開來，讓我們判斷哪些步驟可以交給 AI 自動做。</p>
+
+    <div id="detailList">
+      <div class="process-card" data-pid="1">
+        <div class="card-title mb-2"><i class="bi bi-diagram-3 me-1"></i>流程 #1：<span class="text-muted">（每週銷售報表彙整）</span></div>
+
+        <div class="small-q mb-1">步驟拆解（請按順序列出，可加減步驟）</div>
+        <div class="step-list" id="p1_steps">
+          <!-- 步驟 row 模板（會由 JS 動態複製） -->
+          <div class="step-row" data-step-no="1">
+            <div class="row g-2 align-items-center">
+              <div class="col-auto"><span class="badge bg-secondary step-badge">步驟 1</span></div>
+              <div class="col"><input class="form-control form-control-sm step-name" placeholder="做什麼？例：登入 ERP 下載昨天的銷售明細"></div>
+              <div class="col-auto"><input class="form-control form-control-sm step-tool" placeholder="用什麼工具？例：ERP / Excel"></div>
+              <div class="col-auto">
+                <select class="form-select form-select-sm step-judgment">
+                  <option>純規則（照做就行）</option>
+                  <option>半判斷（要稍微想一下）</option>
+                  <option>高度依賴經驗</option>
+                </select>
+              </div>
+              <div class="col-auto"><button class="btn btn-sm btn-link p-0 text-danger btn-remove-step" title="刪除此步驟"><i class="bi bi-x-lg"></i></button></div>
+            </div>
+            <div class="row g-2 mt-1 align-items-center">
+              <div class="col-auto">
+                <label class="small text-muted mb-0"><input type="checkbox" class="step-is-decision"> 這是決策點（會分岔走不同後續）</label>
+              </div>
+              <div class="col-auto">
+                <label class="small text-muted mb-0"><input type="checkbox" class="step-is-merge"> 合流點（多分支在此會合）</label>
+              </div>
+              <div class="col-auto">
+                <select class="form-select form-select-sm step-branch" style="width:120px">
+                  <option value="">主流程</option>
+                </select>
+              </div>
+            </div>
+            <!-- 分支定義區（勾選決策點後顯示） -->
+            <div class="branch-editor ms-3 mt-2" hidden>
+              <div class="small text-muted mb-1">分支定義（每個分支是一個條件 + 合流回主流程的步驟）：</div>
+              <div class="branch-list"></div>
+              <button class="btn btn-sm btn-link px-0 btn-add-branch"><i class="bi bi-plus"></i> 加一個分支</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-link px-0 btn-add-step"><i class="bi bi-plus"></i> 加一個步驟</button>
+
+        <div class="mt-3 small-q">遇到「非標準情況」時，你們怎麼處理？</div>
+        <textarea class="form-control p1_exception" rows="2" placeholder="例：資料不齊時，會打電話問業務確認後再補登"></textarea>
+
+        <div class="mt-3 small-q">這件事目前已經有多少「自動化」了？</div>
+        <div class="btn-group judgment-chips w-100" role="group">
+          <input type="radio" class="btn-check" name="p1_auto" id="p1_a1"><label class="btn btn-outline-secondary" for="p1_a1">全人工做</label>
+          <input type="radio" class="btn-check" name="p1_auto" id="p1_a2"><label class="btn btn-outline-secondary" for="p1_a2">部分用 Excel 公式/腳本</label>
+          <input type="radio" class="btn-check" name="p1_auto" id="p1_a3"><label class="btn btn-outline-secondary" for="p1_a3">已有 RPA 或自動化工具</label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 4 上傳附件 -->
+  <section class="section" data-section="4" hidden>
+    <h4>4. 上傳現有 SOP 或流程圖</h4>
+    <p class="lead-q">如果有現成的操作手冊（SOP）、流程圖、或截圖，請上傳幫助我們更了解。<b>沒有也沒關係</b>，可直接跳下一步。</p>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="small-q">SOP / 操作手冊（PDF、Word）</div>
+        <label class="upload-box d-block">
+          <i class="bi bi-cloud-arrow-up" style="font-size:2rem;"></i>
+          <div class="mt-2">點擊或拖曳檔案到此</div>
+          <div class="small">PDF / DOCX，單檔 10MB 以內</div>
+          <input type="file" class="d-none" accept=".pdf,.docx,.doc">
+        </label>
+      </div>
+      <div class="col-md-6">
+        <div class="small-q">流程圖 / 截圖（圖片）</div>
+        <label class="upload-box d-block">
+          <i class="bi bi-image" style="font-size:2rem;"></i>
+          <div class="mt-2">點擊或拖曳圖片到此</div>
+          <div class="small">PNG / JPG / SVG，單檔 10MB 以內</div>
+          <input type="file" class="d-none" accept="image/*">
+        </label>
+      </div>
+      <div class="col-12">
+        <div class="small-q">其他補充說明（可選）</div>
+        <textarea class="form-control" rows="2" placeholder="例：上傳的 SOP 是去年版本，今年流程有微調"></textarea>
+      </div>
+    </div>
+    <div class="hint mt-3"><i class="bi bi-shield-check"></i> 你上傳的檔案僅供顧問評估使用，不會對外公開。</div>
+  </section>
+
+  <!-- STEP 5 錯誤成本 -->
+  <section class="section" data-section="5" hidden>
+    <h4>5. 這件事常出錯嗎？</h4>
+    <p class="lead-q">工作流程難免會出錯。請評估「錯了會發生什麼事」的嚴重程度，幫助我們判斷自動化的價值。</p>
+
+    <div class="process-card" data-pid="1">
+      <div class="card-title mb-3"><i class="bi bi-bug me-1"></i>流程 #1</div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="small-q">每個月大概會出錯幾次？</div>
+          <div class="rating" data-name="p1_err_cnt">
+            <input type="radio" name="p1_err_cnt" id="p1_e5" value="5"><label for="p1_e5">★</label>
+            <input type="radio" name="p1_err_cnt" id="p1_e4" value="4"><label for="p1_e4">★</label>
+            <input type="radio" name="p1_err_cnt" id="p1_e3" value="3"><label for="p1_e3">★</label>
+            <input type="radio" name="p1_err_cnt" id="p1_e2" value="2"><label for="p1_e2">★</label>
+            <input type="radio" name="p1_err_cnt" id="p1_e1" value="1"><label for="p1_e1">★</label>
+          </div>
+          <div class="hint">1=幾乎不出錯　3=偶爾會錯　5=常常出錯</div>
+        </div>
+        <div class="col-md-6">
+          <div class="small-q">每次出錯要花多少力氣收拾？</div>
+          <div class="rating" data-name="p1_err_cost">
+            <input type="radio" name="p1_err_cost" id="p1_c5" value="5"><label for="p1_c5">★</label>
+            <input type="radio" name="p1_err_cost" id="p1_c4" value="4"><label for="p1_c4">★</label>
+            <input type="radio" name="p1_err_cost" id="p1_c3" value="3"><label for="p1_c3">★</label>
+            <input type="radio" name="p1_err_cost" id="p1_c2" value="2"><label for="p1_c2">★</label>
+            <input type="radio" name="p1_err_cost" id="p1_c1" value="1"><label for="p1_c1">★</label>
+          </div>
+          <div class="hint">1=改一下就好　3=要重做半天　5=要賠錢或被客訴</div>
+        </div>
+        <div class="col-12">
+          <div class="small-q">錯誤最常是什麼類型？（可複選）</div>
+          <div class="btn-group flex-wrap judgment-chips" role="group">
+            <input type="checkbox" class="btn-check" id="et1"><label class="btn btn-outline-secondary" for="et1">漏填/漏key</label>
+            <input type="checkbox" class="btn-check" id="et2"><label class="btn btn-outline-secondary" for="et2">填錯數字</label>
+            <input type="checkbox" class="btn-check" id="et3"><label class="btn btn-outline-secondary" for="et3">漏送/晚送</label>
+            <input type="checkbox" class="btn-check" id="et4"><label class="btn btn-outline-secondary" for="et4">公式錯</label>
+            <input type="checkbox" class="btn-check" id="et5"><label class="btn btn-outline-secondary" for="et5">其他</label>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="small-q">這些錯誤曾經導致外部客訴或合約損失嗎？</div>
+          <div class="btn-group" role="group">
+            <input type="radio" class="btn-check" name="p1_complaint" id="p1_cp1"><label class="btn btn-outline-secondary" for="p1_cp1">從來沒有</label>
+            <input type="radio" class="btn-check" name="p1_complaint" id="p1_cp2"><label class="btn btn-outline-secondary" for="p1_cp2">偶爾會</label>
+            <input type="radio" class="btn-check" name="p1_complaint" id="p1_cp3"><label class="btn btn-outline-secondary" for="p1_cp3">常常發生</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 6 機會成本 -->
+  <section class="section" data-section="6" hidden>
+    <h4>6. 來不及做會怎樣？</h4>
+    <p class="lead-q">有些事不是出錯才痛，而是「慢了」就失去機會。這一頁幫我們估算那些「看不見的損失」。</p>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="small-q">哪個流程最容易拖延？</div>
+        <select class="form-select"><option>流程 #1</option><option>流程 #2</option><option>流程 #3</option></select>
+      </div>
+      <div class="col-md-6">
+        <div class="small-q">平均會晚幾天？</div>
+        <select class="form-select"><option>1天內</option><option>2-3天</option><option>一週內</option><option>超過一週</option></select>
+      </div>
+
+      <div class="col-12">
+        <div class="small-q">這種拖延造成的損失有多嚴重？</div>
+        <div class="rating" data-name="delay_loss">
+          <input type="radio" name="delay_loss" id="dl5" value="5"><label for="dl5">★</label>
+          <input type="radio" name="delay_loss" id="dl4" value="4"><label for="dl4">★</label>
+          <input type="radio" name="delay_loss" id="dl3" value="3"><label for="dl3">★</label>
+          <input type="radio" name="delay_loss" id="dl2" value="2"><label for="dl2">★</label>
+          <input type="radio" name="delay_loss" id="dl1" value="1"><label for="dl1">★</label>
+        </div>
+        <div class="hint">1=晚一點也沒差　3=會被唸、要加班補　5=會丟客戶或被罰款</div>
+      </div>
+
+      <div class="col-12">
+        <div class="small-q">有沒有「因為人手不夠而推掉」的業務機會？</div>
+        <div class="rating" data-name="lost_opp">
+          <input type="radio" name="lost_opp" id="lo5" value="5"><label for="lo5">★</label>
+          <input type="radio" name="lost_opp" id="lo4" value="4"><label for="lo4">★</label>
+          <input type="radio" name="lost_opp" id="lo3" value="3"><label for="lo3">★</label>
+          <input type="radio" name="lost_opp" id="lo2" value="2"><label for="lo2">★</label>
+          <input type="radio" name="lost_opp" id="lo1" value="1"><label for="lo1">★</label>
+        </div>
+        <div class="hint">1=從來沒有　3=偶爾推掉　5=常常推掉且金額不小</div>
+      </div>
+
+      <div class="col-12">
+        <div class="small-q">如果這件事能即時做完，你能多做多少生意？</div>
+        <div class="rating" data-name="extra_rev">
+          <input type="radio" name="extra_rev" id="er5" value="5"><label for="er5">★</label>
+          <input type="radio" name="extra_rev" id="er4" value="4"><label for="er4">★</label>
+          <input type="radio" name="extra_rev" id="er3" value="3"><label for="er3">★</label>
+          <input type="radio" name="extra_rev" id="er2" value="2"><label for="er2">★</label>
+          <input type="radio" name="extra_rev" id="er1" value="1"><label for="er1">★</label>
+        </div>
+        <div class="hint">1=沒什麼差　3=有些幫助　5=可以多接不少生意</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 7 AI 準備度 -->
+  <section class="section" data-section="7" hidden>
+    <h4>7. 你們準備好讓 AI 上手了嗎？</h4>
+    <p class="lead-q">AI 要能幫上忙，需要一些客觀條件配合。下面 8 題請依直覺給分，幫我們判斷導入的難易度。</p>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="small-q">R1. 你們的資料現在是什麼模樣？</div>
+        <div class="rating" data-name="r1">
+          <input type="radio" name="r1" id="r1_5" value="5"><label for="r1_5">★</label>
+          <input type="radio" name="r1" id="r1_4" value="4"><label for="r1_4">★</label>
+          <input type="radio" name="r1" id="r1_3" value="3"><label for="r1_3">★</label>
+          <input type="radio" name="r1" id="r1_2" value="2"><label for="r1_2">★</label>
+          <input type="radio" name="r1" id="r1_1" value="1"><label for="r1_1">★</label>
+        </div>
+        <div class="hint">1=還在用紙本　3=一半紙本一半電腦　5=全部都在電腦系統裡</div>
+      </div>
+      <div class="col-md-6">
+        <div class="small-q">R2. 資料有固定格式嗎？</div>
+        <div class="rating" data-name="r2">
+          <input type="radio" name="r2" id="r2_5" value="5"><label for="r2_5">★</label>
+          <input type="radio" name="r2" id="r2_4" value="4"><label for="r2_4">★</label>
+          <input type="radio" name="r2" id="r2_3" value="3"><label for="r2_3">★</label>
+          <input type="radio" name="r2" id="r2_2" value="2"><label for="r2_2">★</label>
+          <input type="radio" name="r2" id="r2_1" value="1"><label for="r2_1">★</label>
+        </div>
+        <div class="hint">1=散落在 Email、PDF　3=部分有表格　5=都是整齊的 Excel 表格</div>
+      </div>
+      <div class="col-md-6">
+        <div class="small-q">R3. 資料的欄位定義穩定嗎？</div>
+        <div class="rating" data-name="r3">
+          <input type="radio" name="r3" id="r3_5" value="5"><label for="r3_5">★</label>
+          <input type="radio" name="r3" id="r3_4" value="4"><label for="r3_4">★</label>
+          <input type="radio" name="r3" id="r3_3" value="3"><label for="r3_3">★</label>
+          <input type="radio" name="r3" id="r3_2" value="2"><label for="r3_2">★</label>
+          <input type="radio" name="r3" id="r3_1" value="1"><label for="r3_1">★</label>
+        </div>
+        <div class="hint">1=每個人填法不同　3=有大致規則　5=有明確的欄位定義文件</div>
+      </div>
+      <div class="col-md-6">
+        <div class="small-q">R4. 這件事的「規則」清楚嗎？</div>
+        <div class="rating" data-name="r4">
+          <input type="radio" name="r4" id="r4_5" value="5"><label for="r4_5">★</label>
+          <input type="radio" name="r4" id="r4_4" value="4"><label for="r4_4">★</label>
+          <input type="radio" name="r4" id="r4_3" value="3"><label for="r4_3">★</label>
+          <input type="radio" name="r4" id="r4_2" value="2"><label for="r4_2">★</label>
+          <input type="radio" name="r4" id="r4_1" value="1"><label for="r4_1">★</label>
+        </div>
+        <div class="hint">1=全靠經驗　3=有口頭規則　5=有寫下來的 SOP</div>
+      </div>
+      <div class="col-md-6">
+        <div class="small-q">R5. 現有 IT 環境能不能被程式讀取？</div>
+        <div class="rating" data-name="r5">
+          <input type="radio" name="r5" id="r5_5" value="5"><label for="r5_5">★</label>
+          <input type="radio" name="r5" id="r5_4" value="4"><label for="r5_4">★</label>
+          <input type="radio" name="r5" id="r5_3" value="3"><label for="r5_3">★</label>
+          <input type="radio" name="r5" id="r5_2" value="2"><label for="r5_2">★</label>
+          <input type="radio" name="r5" id="r5_1" value="1"><label for="r5_1">★</label>
+        </div>
+        <div class="hint">1=完全封閉　3=可以匯出檔案　5=有 API、可程式串接</div>
+      </div>
+      <div class="col-md-6">
+        <div class="small-q">R6. 部門同事對「交給 AI 做」接受度？</div>
+        <div class="rating" data-name="r6">
+          <input type="radio" name="r6" id="r6_5" value="5"><label for="r6_5">★</label>
+          <input type="radio" name="r6" id="r6_4" value="4"><label for="r6_4">★</label>
+          <input type="radio" name="r6" id="r6_3" value="3"><label for="r6_3">★</label>
+          <input type="radio" name="r6" id="r6_2" value="2"><label for="r6_2">★</label>
+          <input type="radio" name="r6" id="r6_1" value="1"><label for="r6_1">★</label>
+        </div>
+        <div class="hint">1=很抗拒　3=觀望中　5=主動想試</div>
+      </div>
+      <div class="col-md-6">
+        <div class="small-q">R7. 部門主管支持 AI 導入嗎？</div>
+        <div class="rating" data-name="r7">
+          <input type="radio" name="r7" id="r7_5" value="5"><label for="r7_5">★</label>
+          <input type="radio" name="r7" id="r7_4" value="4"><label for="r7_4">★</label>
+          <input type="radio" name="r7" id="r7_3" value="3"><label for="r7_3">★</label>
+          <input type="radio" name="r7" id="r7_2" value="2"><label for="r7_2">★</label>
+          <input type="radio" name="r7" id="r7_1" value="1"><label for="r7_1">★</label>
+        </div>
+        <div class="hint">1=沒興趣　3=看看再說　5=願意撥人撥錢做</div>
+      </div>
+      <div class="col-md-6">
+        <div class="small-q">R8. 這件事涉及個資或機密嗎？</div>
+        <div class="rating" data-name="r8">
+          <input type="radio" name="r8" id="r8_5" value="5"><label for="r8_5">★</label>
+          <input type="radio" name="r8" id="r8_4" value="4"><label for="r8_4">★</label>
+          <input type="radio" name="r8" id="r8_3" value="3"><label for="r8_3">★</label>
+          <input type="radio" name="r8" id="r8_2" value="2"><label for="r8_2">★</label>
+          <input type="radio" name="r8" id="r8_1" value="1"><label for="r8_1">★</label>
+        </div>
+        <div class="hint">1=完全公開資料　3=部分機密　5=高度機密/受法規管制（分越高=風險越高）</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 8 期望 -->
+  <section class="section" data-section="8" hidden>
+    <h4>8. 你想看到什麼結果？</h4>
+    <p class="lead-q">最後想聽聽你的期望，幫我們設計適合的方案。沒有對錯，說實話就好。</p>
+
+    <div class="row g-3">
+      <div class="col-12">
+        <div class="small-q">如果交給 AI 做，你覺得能幫上多少忙？</div>
+        <div class="rating" data-name="expected_save">
+          <input type="radio" name="expected_save" id="xs5" value="5"><label for="xs5">★</label>
+          <input type="radio" name="expected_save" id="xs4" value="4"><label for="xs4">★</label>
+          <input type="radio" name="expected_save" id="xs3" value="3"><label for="xs3">★</label>
+          <input type="radio" name="expected_save" id="xs2" value="2"><label for="xs2">★</label>
+          <input type="radio" name="expected_save" id="xs1" value="1"><label for="xs1">★</label>
+        </div>
+        <div class="hint">1=只省一點點（&lt;20%）　3=省一半左右　5=幾乎全交給它（&gt;80%）</div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="small-q">自動化後省下來的人力，你想拿來做什麼？</div>
+        <select class="form-select">
+          <option>提升服務品質</option><option>開發新業務</option><option>降低人力成本</option><option>其他</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <div class="small-q">希望多久看到成果？</div>
+        <select class="form-select">
+          <option>1 個月內</option><option>3 個月內</option><option>半年內</option><option>沒特別要求</option>
+        </select>
+      </div>
+
+      <div class="col-md-6">
+        <div class="small-q">可接受的方案型態？</div>
+        <select class="form-select">
+          <option>純軟體工具</option><option>AI 服務串接</option><option>客製開發</option><option>都可以討論</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <div class="small-q">年度預算區間？</div>
+        <select class="form-select">
+          <option>&lt;30 萬</option><option>30-80 萬</option><option>80-150 萬</option><option>&gt;150 萬</option><option>還沒評估</option>
+        </select>
+      </div>
+
+      <div class="col-12">
+        <div class="small-q">3 個月後，你想看到什麼樣的改變？（成功定義）</div>
+        <textarea class="form-control" rows="2" placeholder="例：每週報表從花 4 小時變成 10 分鐘"></textarea>
+      </div>
+      <div class="col-12">
+        <div class="small-q">最大的顧慮是什麼？</div>
+        <div class="btn-group flex-wrap judgment-chips" role="group">
+          <input type="checkbox" class="btn-check" id="cn1"><label class="btn btn-outline-secondary" for="cn1">資料安全</label>
+          <input type="checkbox" class="btn-check" id="cn2"><label class="btn btn-outline-secondary" for="cn2">投資沒回報</label>
+          <input type="checkbox" class="btn-check" id="cn3"><label class="btn btn-outline-secondary" for="cn3">同事抗拒</label>
+          <input type="checkbox" class="btn-check" id="cn4"><label class="btn btn-outline-secondary" for="cn4">日後維護難</label>
+          <input type="checkbox" class="btn-check" id="cn5"><label class="btn btn-outline-secondary" for="cn5">其他</label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 9 送出 -->
+  <section class="section text-center" data-section="9" hidden>
+    <h4 class="text-center">9. 完成！最後檢查一下</h4>
+    <p class="lead-q text-center">請確認下面的資訊，按下「送出問卷」就完成了。</p>
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle me-1"></i> 送出後，顧問會根據你的回答進行 ROI 評估，並在 1-2 週內回覆 Stage 1 評估報告。
+    </div>
+    <div class="d-flex justify-content-center gap-2">
+      <button class="btn btn-ghost">回去修改</button>
+      <button class="btn btn-brand"><i class="bi bi-send me-1"></i>送出問卷</button>
+    </div>
+  </section>
+
+</div>
+
+<div class="footer-bar">
+  <div class="container d-flex justify-content-between">
+    <button class="btn btn-ghost" id="prevBtn"><i class="bi bi-arrow-left me-1"></i>上一步</button>
+    <span class="align-self-center text-muted small">第 <span id="curStep">1</span> / 9 頁</span>
+    <button class="btn btn-brand" id="nextBtn">下一步<i class="bi bi-arrow-right ms-1"></i></button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const API = '';  // same origin
+let curStep = 1, totalSteps = 9;
+const sections = document.querySelectorAll('[data-section]');
+const navLinks = document.querySelectorAll('#stepNav .nav-link');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const progBar = document.getElementById('progBar');
+const curStepLabel = document.getElementById('curStep');
+
+// ---- State ----
+let surveyId = localStorage.getItem('ai_survey_id') ? parseInt(localStorage.getItem('ai_survey_id')) : null;
+let procDbIds = {};  // local pid -> db process id
+let pendingFiles = {}; // local pid -> {sop: file, flowchart: file}
+let procCount = 1;
+
+function toast(msg, ok=true){
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;top:16px;right:16px;z-index:9999;padding:.6rem 1rem;border-radius:8px;background:'+(ok?'#16a34a':'#dc2626')+';color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.15);font-size:.9rem;';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2600);
+}
+
+async function api(path, method='GET', body=null, isForm=false){
+  const opts = {method, headers:{}};
+  if(body){
+    if(isForm){ opts.body = body; }
+    else { opts.headers['Content-Type']='application/json'; opts.body = JSON.stringify(body); }
+  }
+  const r = await fetch(API+path, opts);
+  if(!r.ok){
+    let m = 'API error '+r.status;
+    try{ const j = await r.json(); m = j.detail || m; }catch(e){}
+    throw new Error(m);
+  }
+  return r.status===204 ? null : await r.json();
+}
+
+function getRating(name){
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? parseInt(el.value) : null;
+}
+function val(selector){ const el = document.querySelector(selector); return el ? el.value.trim() : ''; }
+
+// ---- Step navigation ----
+function showStep(n){
+  curStep = Math.max(1, Math.min(totalSteps, n));
+  sections.forEach(s => s.hidden = (s.dataset.section != curStep));
+  navLinks.forEach(l => {
+    const s = parseInt(l.dataset.step);
+    l.classList.toggle('active', s === curStep);
+    if (s < curStep) l.classList.add('done'); else l.classList.remove('done');
+  });
+  progBar.style.width = ((curStep-1)/(totalSteps-1)*100) + '%';
+  curStepLabel.textContent = curStep;
+  prevBtn.disabled = (curStep===1);
+  nextBtn.disabled = (curStep===totalSteps);
+  if (curStep===totalSteps) nextBtn.innerHTML = '<i class="bi bi-send me-1"></i>送出問卷';
+  else nextBtn.innerHTML = '下一步<i class="bi bi-arrow-right ms-1"></i>';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+// NOTE: event handlers are bound later via onclick (with autosave) — see goStep below.
+
+// ---- Process card clone ----
+document.getElementById('addProcess').addEventListener('click', () => {
+  procCount++;
+  const tpl = document.querySelector('#processList .process-card');
+  const clone = tpl.cloneNode(true);
+  clone.dataset.pid = procCount;
+  clone.querySelector('.card-title').innerHTML = '<i class="bi bi-list-task me-1"></i>工作流程 #'+procCount;
+  clone.querySelectorAll('input,textarea,select').forEach(el => {
+    if(el.id) el.id = el.id.replace('p1','p'+procCount);
+    if(el.name) el.name = el.name.replace('p1','p'+procCount);
+    if(el.checked) el.checked = false;
+    if(el.value && el.type!=='radio' && el.tagName!=='SELECT') el.value='';
+  });
+  clone.querySelector('.btn-remove-process').hidden = false;
+  clone.querySelector('.btn-remove-process').addEventListener('click', () => clone.remove());
+  document.getElementById('processList').appendChild(clone);
+  bindUploads(clone);
+});
+
+// ---- Rating text feedback ----
+document.addEventListener('change', e => {
+  if(e.target.matches('.rating input[type=radio]')){
+    const v = e.target.value;
+    const labels = ['','極低','偏低','中等','偏高','極高'];
+    const wrap = e.target.closest('.rating').parentElement;
+    let txt = wrap.querySelector('.rating-text');
+    if(!txt){txt = document.createElement('div'); txt.className='rating-text'; wrap.appendChild(txt);}
+    txt.textContent = '你給了 '+v+' 分（'+labels[v]+'）';
+  }
+});
+
+// ---- Upload boxes ----
+function bindUploads(scope=document){
+  scope.querySelectorAll('.upload-box input[type=file]').forEach(inp => {
+    if(inp.dataset.bound) return; inp.dataset.bound='1';
+    inp.addEventListener('change', () => {
+      const box = inp.closest('.upload-box');
+      const file = inp.files[0];
+      if(file){
+        box.innerHTML = '<i class="bi bi-check-circle" style="font-size:2rem;color:var(--ok)"></i><div class="mt-2">'+file.name+'</div><div class="small">'+(file.size/1024/1024).toFixed(2)+' MB</div>';
+        box.style.borderColor = 'var(--ok)';
+        const card = box.closest('.process-card') || box.closest('section');
+        const pid = card ? card.dataset.pid : '1';
+        const isFlow = box.closest('.col-md-6') && /圖片|流程圖/.test(box.previousElementSibling?.textContent || inp.accept==='image/*');
+        if(!pendingFiles[pid]) pendingFiles[pid] = {};
+        if(inp.accept && inp.accept.includes('image')) pendingFiles[pid].flowchart = file;
+        else pendingFiles[pid].sop = file;
+      }
+    });
+  });
+}
+bindUploads();
+
+// ---- Step & branch UI ----
+function refreshStepBadges(stepList){
+  stepList.querySelectorAll('.step-row').forEach((row, i) => {
+    row.dataset.stepNo = i+1;
+    const badge = row.querySelector('.step-badge');
+    if(badge) badge.textContent = '步驟 ' + (i+1);
+  });
+}
+
+function refreshBranchDropdowns(card){
+  // 收集所有「主流程」步驟號，作為「合流至」選項
+  const stepList = card.querySelector('.step-list');
+  const mainSteps = [];
+  stepList.querySelectorAll('.step-row').forEach(row => {
+    if(!row.querySelector('.step-branch').value) mainSteps.push(row.dataset.stepNo);
+  });
+  card.querySelectorAll('.branch-merge-to').forEach(sel => {
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">（選擇合流步驟）</option>' +
+      mainSteps.map(n => `<option value="${n}" ${n==cur?'selected':''}>步驟 ${n}</option>`).join('');
+  });
+  // 「歸屬」下拉：列出本流程已有的所有 branch
+  const branchOpts = [];
+  card.querySelectorAll('.branch-editor').forEach(ed => {
+    ed.querySelectorAll('.branch-row').forEach((br, i) => {
+      branchOpts.push({no: i+1, desc: br.querySelector('.branch-cond')?.value || ''});
+    });
+  });
+  card.querySelectorAll('.step-branch').forEach(sel => {
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">主流程</option>' +
+      branchOpts.map(o => `<option value="branch${o.no}" ${'branch'+o.no==cur?'selected':''}>分支 ${o.no}${o.desc?('：'+o.desc.slice(0,10)):''}</option>`).join('');
+  });
+}
+
+function makeBranchRow(){
+  const div = document.createElement('div');
+  div.className = 'branch-row row g-1 mb-1 align-items-center';
+  div.innerHTML = `
+    <div class="col-auto small text-muted">分支 <span class="branch-no">1</span></div>
+    <div class="col"><input class="form-control form-control-sm branch-cond" placeholder="條件，例：評分 ≥ 700"></div>
+    <div class="col-auto">
+      <select class="form-select form-select-sm branch-merge-to" style="width:130px">
+        <option value="">（選擇合流步驟）</option>
+      </select>
+    </div>
+    <div class="col-auto">
+      <label class="small text-muted mb-0"><input type="checkbox" class="branch-is-end"> 結束點</label>
+    </div>
+    <div class="col-auto"><button class="btn btn-sm btn-link p-0 text-danger btn-remove-branch"><i class="bi bi-x-lg"></i></button></div>
+  `;
+  div.querySelector('.btn-remove-branch').onclick = () => {
+    div.remove();
+    const card = div.closest('.process-card');
+    refreshBranchDropdowns(card);
+  };
+  div.querySelector('.branch-is-end').onchange = e => {
+    const mergeSel = div.querySelector('.branch-merge-to');
+    mergeSel.disabled = e.target.checked;
+    if(e.target.checked) mergeSel.value = '';
+  };
+  return div;
+}
+
+function bindStepRow(row, card){
+  // 決策點切換
+  row.querySelector('.step-is-decision').onchange = e => {
+    const editor = row.querySelector('.branch-editor');
+    editor.hidden = !e.target.checked;
+    if(e.target.checked && editor.querySelectorAll('.branch-row').length === 0){
+      editor.querySelector('.btn-add-branch').click();
+    }
+    refreshBranchDropdowns(card);
+  };
+  // 刪除步驟
+  row.querySelector('.btn-remove-step').onclick = () => {
+    row.remove();
+    refreshStepBadges(card.querySelector('.step-list'));
+    refreshBranchDropdowns(card);
+  };
+  // 歸屬變更無需特殊處理
+}
+
+// 綁定現有步驟與「加步驟」「加分支」按鈕
+document.querySelectorAll('.process-card').forEach(card => {
+  const stepList = card.querySelector('.step-list');
+  if(stepList){
+    stepList.querySelectorAll('.step-row').forEach(row => bindStepRow(row, card));
+    refreshStepBadges(stepList);
+  }
+  const addStepBtn = card.querySelector('.btn-add-step');
+  if(addStepBtn){
+    addStepBtn.onclick = () => {
+      const tpl = stepList.querySelector('.step-row');
+      const clone = tpl.cloneNode(true);
+      clone.querySelector('.step-name').value = '';
+      clone.querySelector('.step-tool').value = '';
+      clone.querySelector('.step-judgment').selectedIndex = 0;
+      clone.querySelector('.step-is-decision').checked = false;
+      clone.querySelector('.step-is-merge').checked = false;
+      clone.querySelector('.step-branch').value = '';
+      clone.querySelector('.branch-editor').hidden = true;
+      clone.querySelector('.branch-list').innerHTML = '';
+      stepList.appendChild(clone);
+      refreshStepBadges(stepList);
+      bindStepRow(clone, card);
+    };
+  }
+  // 加分支按鈕（事件代理，因為按鈕在 row 內）
+  card.addEventListener('click', e => {
+    if(e.target.closest('.btn-add-branch')){
+      const editor = e.target.closest('.branch-editor');
+      const list = editor.querySelector('.branch-list');
+      const row = makeBranchRow();
+      list.appendChild(row);
+      row.querySelector('.branch-no').textContent = list.querySelectorAll('.branch-row').length;
+      refreshBranchDropdowns(card);
+    }
+  });
+});
+
+// ---- Save flow ----
+async function ensureSurvey(){
+  if(surveyId) return surveyId;
+  const data = {
+    company: val('section[data-section="1"] input[placeholder*="公司"]'),
+    dept_name: val('section[data-section="1"] input[placeholder*="部門"]'),
+    respondent_name: val('section[data-section="1"] input:nth-of-type(3)'),
+  };
+  const s = await api('/api/surveys','POST', data);
+  surveyId = s.id;
+  localStorage.setItem('ai_survey_id', s.id);
+  return s.id;
+}
+
+async function saveSection1(){
+  const data = {
+    company: val('section[data-section="1"] .row > div:nth-child(1) input'),
+    dept_name: val('section[data-section="1"] .row > div:nth-child(2) input'),
+    dept_size: parseInt(val('section[data-section="1"] .row > div:nth-child(3) input'))||null,
+    respondent_name: val('section[data-section="1"] .row > div:nth-child(4) input'),
+    respondent_title: val('section[data-section="1"] .row > div:nth-child(5) input'),
+    tenure_years: parseInt(val('section[data-section="1"] .row > div:nth-child(6) input'))||null,
+    interview_date: val('section[data-section="1"] .row > div:nth-child(7) input'),
+    consultant_name: val('section[data-section="1"] .row > div:nth-child(8) input'),
+    responsibility: val('section[data-section="1"] textarea'),
+    status: 'draft',
+  };
+  if(!surveyId){
+    const s = await api('/api/surveys','POST', data);
+    surveyId = s.id; localStorage.setItem('ai_survey_id', s.id);
+  } else {
+    await api('/api/surveys/'+surveyId,'PUT', data);
+  }
+}
+
+function readProcessCard(card){
+  const pid = card.dataset.pid;
+  const inputs = card.querySelectorAll('input[type=text],input[type=number],select,textarea');
+  const arr = Array.from(inputs);
+  const v = (i) => arr[i] ? arr[i].value.trim() : '';
+  return {
+    name: v(0), purpose: v(1), frequency: v(2), systems_used: v(3),
+    hours_score: getRating('p'+pid+'_hours'),
+    rate_score: getRating('p'+pid+'_rate'),
+    data_form: v(4),
+    pain_points: v(5),
+  };
+}
+
+async function saveSection2(){
+  const cards = document.querySelectorAll('#processList .process-card');
+  let seq = 0;
+  for(const card of cards){
+    seq++;
+    const data = readProcessCard(card); data.seq = seq;
+    const pid = card.dataset.pid;
+    if(procDbIds[pid]){
+      await api('/api/processes/'+procDbIds[pid],'PUT', data);
+    } else {
+      const p = await api('/api/surveys/'+surveyId+'/processes','POST', data);
+      procDbIds[pid] = p.id;
+    }
+  }
+}
+
+async function saveSection3(){
+  // DetailList cards mirror processList cards by pid
+  const detailCards = document.querySelectorAll('#detailList .process-card');
+  for(const card of detailCards){
+    const pid = card.dataset.pid;
+    const dbId = procDbIds[pid];
+    if(!dbId) continue;
+
+    // automation / exception
+    const autoEl = card.querySelector('input[name$="_auto"]:checked');
+    const automation = autoEl ? autoEl.id.endsWith('1')?'full_manual':autoEl.id.endsWith('2')?'partial_script':'has_rpa' : null;
+    const exc = card.querySelector('.p1_exception, textarea');
+    const detail = { automation_current: automation, exception_handling: exc?exc.value:'', supplementary_desc:'' };
+    await api('/api/processes/'+dbId+'/detail','POST', detail);
+
+    // 先收集所有步驟資料
+    const stepList = card.querySelector('.step-list');
+    if(!stepList) continue;
+    const stepRows = stepList.querySelectorAll('.step-row');
+    const stepData = [];
+    stepRows.forEach((row, idx) => {
+      stepData.push({
+        step_no: idx+1,
+        step_name: row.querySelector('.step-name')?.value.trim() || '',
+        tool_used: row.querySelector('.step-tool')?.value.trim() || '',
+        judgment_level: (() => {
+          const v = row.querySelector('.step-judgment')?.value || '';
+          if(v.includes('純規則')) return 'rule';
+          if(v.includes('半判斷')) return 'half';
+          return 'experience';
+        })(),
+        is_decision: row.querySelector('.step-is-decision')?.checked || false,
+        is_merge: row.querySelector('.step-is-merge')?.checked || false,
+        branch_label: row.querySelector('.step-branch')?.value || '',  // '' or 'branchN'
+      });
+    });
+
+    // 第一階段：先建立所有步驟（branch_id 暫時為 NULL），記下回傳的 step id
+    const stepIds = [];
+    for(let i=0; i<stepData.length; i++){
+      const s = stepData[i];
+      const payload = { step_no: s.step_no, step_name: s.step_name, tool_used: s.tool_used,
+                        judgment_level: s.judgment_level, is_decision: s.is_decision, is_merge: s.is_merge };
+      const created = await api('/api/processes/'+dbId+'/steps','POST', payload);
+      stepIds.push(created.id);
+    }
+
+    // 第二階段：建立決策點的分支
+    // branchDbIds: { stepIdx: [branchRow0DbId, branchRow1DbId, ...] }
+    const branchDbIds = {};
+    for(let i=0; i<stepData.length; i++){
+      if(!stepData[i].is_decision) continue;
+      const row = stepRows[i];
+      const branchRows = row.querySelectorAll('.branch-row');
+      branchDbIds[i] = [];
+      branchRows.forEach((br, bIdx) => {
+        const cond = br.querySelector('.branch-cond')?.value.trim() || '';
+        const mergeNo = br.querySelector('.branch-merge-to')?.value || '';
+        const isEnd = br.querySelector('.branch-is-end')?.checked || false;
+        const mergeToStepNo = (isEnd || !mergeNo) ? null : parseInt(mergeNo);
+        const created = api_sync('/api/steps/'+stepIds[i]+'/branches','POST', {
+          branch_no: bIdx+1, condition_desc: cond,
+          merge_to_step_no: mergeToStepNo, is_endpoint: isEnd,
+        });
+        branchDbIds[i].push(created.id);
+      });
+    }
+
+    // 第三階段：為分支子步驟更新 branch_id
+    for(let i=0; i<stepData.length; i++){
+      const lbl = stepData[i].branch_label;
+      if(!lbl) continue;  // 主流程，不需要更新
+      const m = lbl.match(/^branch(\d+)$/);
+      if(!m) continue;
+      const branchNum = parseInt(m[1]);
+      // 找到第幾個決策點的第幾個分支
+      let counter = 0, targetBranchId = null;
+      for(const sIdx in branchDbIds){
+        for(let b=0; b<branchDbIds[sIdx].length; b++){
+          counter++;
+          if(counter === branchNum){ targetBranchId = branchDbIds[sIdx][b]; break; }
+        }
+        if(targetBranchId) break;
+      }
+      if(targetBranchId){
+        // 用 PUT /api/steps/{step_id} 更新 branch_id
+        const payload = { ...stepData[i], branch_id: targetBranchId };
+        api_sync('/api/steps/'+stepIds[i], 'PUT', payload);
+      }
+    }
+  }
+}
+
+// 同步版的 api（用 await 亦可，這裡為了簡化迴圈內順序）
+function api_sync(path, method='GET', body=null){
+  const opts = {method, headers:{'Content-Type':'application/json'}};
+  if(body) opts.body = JSON.stringify(body);
+  const r = new XMLHttpRequest();
+  r.open(method, API+path, false);  // 同步
+  r.setRequestHeader('Content-Type','application/json');
+  r.send(body?JSON.stringify(body):null);
+  if(r.status >= 400) throw new Error('API '+r.status+': '+r.responseText);
+  return r.status===204 ? null : JSON.parse(r.responseText);
+}
+
+async function saveSection4(){
+  for(const pid in pendingFiles){
+    const dbId = procDbIds[pid];
+    if(!dbId) continue;
+    const f = pendingFiles[pid];
+    if(f.sop){
+      const fd = new FormData(); fd.append('upload_type','sop'); fd.append('file', f.sop);
+      await api('/api/processes/'+dbId+'/uploads','POST', fd, true);
+    }
+    if(f.flowchart){
+      const fd = new FormData(); fd.append('upload_type','flowchart'); fd.append('file', f.flowchart);
+      await api('/api/processes/'+dbId+'/uploads','POST', fd, true);
+    }
+  }
+  pendingFiles = {};
+}
+
+async function saveSection5(){
+  const cards = document.querySelectorAll('section[data-section="5"] .process-card');
+  for(const card of cards){
+    const pid = card.dataset.pid;
+    const dbId = procDbIds[pid];
+    if(!dbId) continue;
+    const types = Array.from(card.querySelectorAll('.judgment-chips input:checked + label')).map(l=>l.textContent).join(',');
+    const compEl = card.querySelector('input[name$="_complaint"]:checked');
+    const comp = compEl? compEl.id.endsWith('1')?'none':compEl.id.endsWith('2')?'occasional':'frequent':null;
+    await api('/api/processes/'+dbId+'/error_costs','POST', {
+      err_count_score: getRating('p'+pid+'_err_cnt'),
+      err_cost_score: getRating('p'+pid+'_err_cost'),
+      error_types: types, complaint_level: comp,
+    });
+  }
+}
+
+async function saveSection6(){
+  const sel = document.querySelectorAll('section[data-section="6"] select');
+  const delayProc = sel[0]?sel[0].value.match(/#(\d+)/):null;
+  const delayedId = delayProc ? procDbIds[delayProc[1]] : null;
+  await api('/api/surveys/'+surveyId+'/opportunity_costs','POST', {
+    delayed_process_id: delayedId,
+    avg_delay_days: sel[1]?sel[1].value:'',
+    delay_loss_score: getRating('delay_loss'),
+    lost_opp_score: getRating('lost_opp'),
+    extra_rev_score: getRating('extra_rev'),
+  });
+}
+
+async function saveSection7(){
+  await api('/api/surveys/'+surveyId+'/ai_readiness','POST', {
+    r1_data_digital: getRating('r1'), r2_data_structured: getRating('r2'),
+    r3_data_quality: getRating('r3'), r4_rule_clarity: getRating('r4'),
+    r5_it_infra: getRating('r5'), r6_user_acceptance: getRating('r6'),
+    r7_leadership_support: getRating('r7'), r8_compliance_risk: getRating('r8'),
+  });
+}
+
+async function saveSection8(){
+  const s = document.querySelectorAll('section[data-section="8"] select');
+  const concerns = Array.from(document.querySelectorAll('section[data-section="8"] .judgment-chips input:checked + label')).map(l=>l.textContent).join(',');
+  const ta = document.querySelector('section[data-section="8"] textarea');
+  await api('/api/surveys/'+surveyId+'/expectations','POST', {
+    expected_saving_score: getRating('expected_save'),
+    reallocated_to: s[0]?s[0].value:'', desired_timeline: s[1]?s[1].value:'',
+    solution_types: s[2]?s[2].value:'', budget_range: s[3]?s[3].value:'',
+    success_definition: ta?ta.value:'', main_concerns: concerns,
+  });
+}
+
+// Save current section when leaving it
+const saveFns = {1:saveSection1,2:saveSection2,3:saveSection3,4:saveSection4,5:saveSection5,6:saveSection6,7:saveSection7,8:saveSection8};
+async function saveCurrent(){
+  try{
+    if(curStep===1 && !surveyId){ await saveSection1(); }
+    else if(surveyId && saveFns[curStep]){ await saveFns[curStep](); }
+    if(surveyId) toast('已自動暫存');
+  }catch(e){ toast('儲存失敗：'+e.message, false); }
+}
+
+// Override nav to save before moving
+async function goStep(n){
+  await saveCurrent();
+  showStep(n);
+}
+navLinks.forEach(l => l.onclick = e => { e.preventDefault(); goStep(parseInt(l.dataset.step)); });
+prevBtn.onclick = () => goStep(curStep-1);
+nextBtn.onclick = async () => {
+  if(curStep < totalSteps){ await goStep(curStep+1); return; }
+  await submitSurvey(true);
+};
+
+async function submitSurvey(final){
+  try{
+    await saveCurrent();
+    // mark submitted
+    const cur = await api('/api/surveys/'+surveyId);
+    cur.status = 'submitted';
+    await api('/api/surveys/'+surveyId,'PUT', cur);
+    toast('問卷已送出！顧問將在 1-2 週內回覆評估報告');
+    setTimeout(()=> location.href='/', 1800);
+  }catch(e){ toast('送出失敗：'+e.message, false); }
+}
+
+showStep(1);
+</script>
+</body>
+</html>

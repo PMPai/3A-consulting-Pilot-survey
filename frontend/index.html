@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 導入需求評估系統</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+  :root{--brand:#2563eb;--brand-dark:#1e40af;--soft:#f1f5f9;}
+  body{background:var(--soft);font-family:"Microsoft JhengHei","PingFang TC",system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;}
+  .hero{background:#fff;border-radius:18px;padding:3rem 2.5rem;box-shadow:0 4px 20px rgba(0,0,0,.06);max-width:760px;width:100%;}
+  .hero h1{color:var(--brand-dark);font-weight:700;}
+  .hero .sub{color:#64748b;}
+  .role-card{border:1px solid #e2e8f0;border-radius:12px;padding:1.4rem;transition:.18s;cursor:pointer;height:100%;}
+  .role-card:hover{border-color:var(--brand);box-shadow:0 4px 14px rgba(37,99,235,.12);transform:translateY(-2px);}
+  .role-card .ico{font-size:2.4rem;color:var(--brand);}
+  .role-card.client .ico{color:#16a34a;}
+  .brand-bar{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;border-radius:12px;padding:1rem 1.4rem;margin-bottom:1.6rem;}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="brand-bar d-flex align-items-center">
+    <i class="bi bi-robot fs-2 me-3"></i>
+    <div>
+      <div class="fw-bold fs-5">AI 導入顧問服務 — Stage 1 評估系統</div>
+      <small class="opacity-75">輕量版麥肯錫｜中小企業 AI 第一步</small>
+    </div>
+  </div>
+
+  <h1 class="h4 mb-1">請選擇您的身份進入</h1>
+  <p class="sub mb-4">本系統分為「客戶端」與「顧問端」兩個入口。客戶用來填寫部門調研問卷，顧問用來檢視資料並進行 ROI 評估。</p>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <a href="/client/survey" class="text-decoration-none">
+        <div class="role-card client">
+          <i class="bi bi-pencil-square ico"></i>
+          <h5 class="mt-2 mb-1">客戶端</h5>
+          <p class="text-muted small mb-0">填寫部門調研問卷，盤點工作流程並上傳 SOP</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-6">
+      <a href="/consultant/dashboard" class="text-decoration-none">
+        <div class="role-card">
+          <i class="bi bi-graph-up ico"></i>
+          <h5 class="mt-2 mb-1">顧問端</h5>
+          <p class="text-muted small mb-0">檢視問卷、ROI 試算、Stage 2 門檻檢核與圖表分析</p>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <hr class="my-4">
+  <div class="text-muted small">
+    <i class="bi bi-info-circle me-1"></i> 內網部署，無需登入。資料儲存於本機 SQLite。<br>
+    啟動方式：執行 <code>start.bat</code>，瀏覽器開啟 <code>http://localhost:3535</code>
+  </div>
+</div>
+</body>
+</html>

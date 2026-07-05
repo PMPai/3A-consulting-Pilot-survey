@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>顧問端 — 問卷詳情</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{--brand:#2563eb;--brand-dark:#1e40af;--soft:#f1f5f9;--ok:#16a34a;--bad:#dc2626;--warn:#f59e0b;}
+  body{background:var(--soft);font-family:"Microsoft JhengHei","PingFang TC",system-ui,sans-serif;}
+  .topbar{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;}
+  .card-panel{background:#fff;border-radius:14px;padding:1.2rem 1.4rem;box-shadow:0 1px 3px rgba(0,0,0,.05);margin-bottom:1rem;}
+  .gate-yes{color:var(--ok);font-weight:600;}
+  .gate-no{color:var(--bad);font-weight:600;}
+  .chart-box{position:relative;height:280px;}
+  table.tbl th{background:#f1f5f9;font-weight:600;}
+</style>
+</head>
+<body>
+<div class="topbar py-3 px-4 mb-3 d-flex justify-content-between align-items-center">
+  <div><h5 class="mb-0" id="title"><i class="bi bi-file-earmark-text me-2"></i>問卷詳情</h5><small class="opacity-75" id="sub"></small></div>
+  <a href="/consultant/dashboard" class="btn btn-sm btn-light">返回總覽</a>
+</div>
+
+<div class="container">
+  <div id="loading" class="text-center text-muted p-5">載入中…</div>
+  <div id="body" hidden>
+
+    <!-- Row 1: Survey info + Gate dashboard -->
+    <div class="row g-3">
+      <div class="col-md-7">
+        <div class="card-panel">
+          <h6 class="text-muted mb-3"><i class="bi bi-info-circle me-1"></i>基本資料</h6>
+          <table class="table table-sm mb-0">
+            <tbody id="infoTable"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-md-5">
+        <div class="card-panel">
+          <h6 class="text-muted mb-2"><i class="bi bi-shield-check me-1"></i>Stage 2 門檻檢核</h6>
+          <div id="gateBoard"></div>
+          <div class="mt-2" id="gateConclusion"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Charts -->
+    <div class="row g-3">
+      <div class="col-md-6"><div class="card-panel"><h6 class="text-muted">流程潛在效益比較（長條圖）</h6><div class="chart-box"><canvas id="chartBar"></canvas></div></div></div>
+      <div class="col-md-6"><div class="card-panel"><h6 class="text-muted">AI 導入準備度（雷達圖）</h6><div class="chart-box"><canvas id="chartRadar"></canvas></div></div></div>
+      <div class="col-md-6"><div class="card-panel"><h6 class="text-muted">效益 vs 難度（散點圖）</h6><div class="chart-box"><canvas id="chartScatter"></canvas></div></div></div>
+      <div class="col-md-6"><div class="card-panel"><h6 class="text-muted">成本結構比較（堆疊長條）</h6><div class="chart-box"><canvas id="chartStack"></canvas></div></div></div>
+    </div>
+
+    <!-- Row 3: Process table + ROI controls -->
+    <div class="card-panel">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="text-muted mb-0"><i class="bi bi-list-task me-1"></i>工作流程與 ROI</h6>
+        <button class="btn btn-sm btn-primary" id="recalcBtn"><i class="bi bi-calculator me-1"></i>重新試算 ROI</button>
+      </div>
+      <table class="table table-sm tbl" id="roiTable">
+        <thead><tr><th>#</th><th>流程名稱</th><th>時間成本/年</th><th>錯誤成本/年</th><th>機會成本/年</th><th>節省%</th><th>年度潛在效益</th><th>難度</th><th>優先序</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Row 4: Process details (steps + uploads) -->
+    <div id="processDetails"></div>
+
+    <!-- Row 5: Gate recommendation -->
+    <div class="card-panel">
+      <h6 class="text-muted mb-2"><i class="bi bi-flag me-1"></i>結論與 Pilot 建議</h6>
+      <div class="row g-2">
+        <div class="col-md-6">
+          <label class="form-label small">結論</label>
+          <select class="form-select form-select-sm" id="gConclusion">
+            <option value="suitable">適合進入 Stage 2</option>
+            <option value="not_suitable">不適合</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small">建議 Pilot 流程</label>
+          <select class="form-select form-select-sm" id="gPilot"></select>
+        </div>
+        <div class="col-12">
+          <label class="form-label small">建議理由</label>
+          <textarea class="form-control form-control-sm" id="gReason" rows="2"></textarea>
+        </div>
+        <div class="col-12">
+          <button class="btn btn-sm btn-success" id="saveGateBtn"><i class="bi bi-save me-1"></i>儲存結論</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let DATA = null, charts = {};
+const sid = new URLSearchParams(location.search).get('id');
+
+async function api(p, m='GET', b=null){
+  const o = {method:m, headers:{}};
+  if(b){ o.headers['Content-Type']='application/json'; o.body=JSON.stringify(b); }
+  const r = await fetch(p, o); if(!r.ok) throw new Error((await r.json().catch(()=>({})).detail)||'err'); return r.json();
+}
+
+function money(n){ return n? '$'+Math.round(n).toLocaleString() : '$0'; }
+function fmt(v){ return v==null?'-':v; }
+
+async function load(){
+  try{
+    DATA = await api('/api/surveys/'+sid+'/full');
+    document.getElementById('loading').hidden = true;
+    document.getElementById('body').hidden = false;
+    renderInfo(); renderGate(); renderCharts(); renderRoiTable(); renderDetails(); renderGateForm();
+  }catch(e){ document.getElementById('loading').textContent = '載入失敗：'+e.message; }
+}
+
+function renderInfo(){
+  const s = DATA.survey;
+  document.getElementById('title').innerHTML = '<i class="bi bi-file-earmark-text me-2"></i>'+ (s.company||'') +' — '+(s.dept_name||'');
+  document.getElementById('sub').textContent = '受訪：'+ (s.respondent_name||'-') +'　|　顧問：'+ (s.consultant_name||'-') +'　|　狀態：'+ (s.status==='submitted'?'已送出':'草稿');
+  const rows = [['公司',s.company],['部門',s.dept_name],['部門人數',s.dept_size],['受訪者',s.respondent_name],['職稱',s.respondent_title],['年資',s.tenure_years+' 年'],['訪談日期',s.interview_date],['主要職責',s.responsibility]];
+  document.getElementById('infoTable').innerHTML = rows.map(r=>`<tr><th style="width:30%">${r[0]}</th><td>${fmt(r[1])}</td></tr>`).join('');
+}
+
+function renderGate(){
+  const g = DATA.gate_check;
+  if(!g){ document.getElementById('gateBoard').innerHTML = '<div class="text-muted small">尚未執行門檻檢核。請先試算 ROI 後儲存結論。</div>'; return; }
+  const items = [
+    ['年度效益 > 50 萬', g.benefit_threshold],
+    ['導入難度 ≤ 3.5', g.difficulty_pass],
+    ['規則明確度 ≥ 3', g.rule_pass],
+    ['資料準備度 ≥ 3', g.data_pass],
+    ['高層支持 ≥ 4', g.leadership_pass],
+    ['合規風險 ≤ 3', g.compliance_pass],
+    ['預算與效益匹配', g.budget_match],
+  ];
+  document.getElementById('gateBoard').innerHTML = items.map(it=>`
+    <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
+      <span class="small">${it[0]}</span>
+      <span class="${it[1]?'gate-yes':'gate-no'}"><i class="bi ${it[1]?'bi-check-circle-fill':'bi-x-circle-fill'}"></i> ${it[1]?'達成':'未達'}</span>
+    </div>`).join('');
+  const concl = g.conclusion==='suitable' ? '<span class="badge bg-success">適合進入 Stage 2</span>' : '<span class="badge bg-danger">不適合</span>';
+  const pilot = DATA.processes.find(p=>p.id===g.recommended_pilot_process_id);
+  document.getElementById('gateConclusion').innerHTML = concl + (pilot? '　建議 Pilot：<b>'+pilot.name+'</b>':'') + (g.recommendation_reason? '<div class="small text-muted mt-1">'+g.recommendation_reason+'</div>':'');
+}
+
+function renderCharts(){
+  const procs = DATA.processes;
+  // 1. Bar chart - annual benefit
+  charts.bar = new Chart(document.getElementById('chartBar'), {
+    type:'bar',
+    data:{ labels: procs.map(p=>p.name||'流程'+p.seq),
+      datasets:[{label:'年度潛在效益 (NT$)', data: procs.map(p=>p.roi?p.roi.annual_potential_benefit:0), backgroundColor:'#2563eb'}] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} }
+  });
+
+  // 2. Radar - AI readiness
+  const ar = DATA.ai_readiness || {};
+  charts.radar = new Chart(document.getElementById('chartRadar'), {
+    type:'radar',
+    data:{ labels:['R1數位化','R2結構化','R3品質','R4規則','R5 IT','R6接受度','R7主管','R8風險'],
+      datasets:[{label:'分數', data:[ar.r1,ar.r2,ar.r3,ar.r4,ar.r5,ar.r6,ar.r7,ar.r8].map(x=>x||0),
+        backgroundColor:'rgba(37,99,235,.2)', borderColor:'#2563eb', pointBackgroundColor:'#2563eb'}] },
+    options:{responsive:true, maintainAspectRatio:false, scales:{r:{min:0,max:5,ticks:{stepSize:1}}}}
+  });
+
+  // 3. Scatter - benefit vs difficulty (4 quadrants)
+  charts.scatter = new Chart(document.getElementById('chartScatter'), {
+    type:'scatter',
+    data:{ datasets:[{ label:'流程', data: procs.map(p=>({x: p.roi?p.roi.difficulty_score:0, y: p.roi?p.roi.annual_potential_benefit:0, name:p.name})),
+      backgroundColor:'#16a34a' }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ tooltip:{ callbacks:{ label:(c)=>{ const d=c.raw; return d.name+': 效益$'+Math.round(d.y)+', 難度'+d.x; } } } },
+      scales:{ x:{title:{display:true,text:'導入難度(1-5)'}, min:0, max:5}, y:{title:{display:true,text:'年度效益($)'}} } }
+  });
+
+  // 4. Stacked bar - cost breakdown
+  charts.stack = new Chart(document.getElementById('chartStack'), {
+    type:'bar',
+    data:{ labels: procs.map(p=>p.name||'流程'+p.seq),
+      datasets:[
+        {label:'時間成本', data:procs.map(p=>p.roi?p.roi.time_cost_yearly:0), backgroundColor:'#60a5fa'},
+        {label:'錯誤成本', data:procs.map(p=>p.roi?p.roi.error_cost_yearly:0), backgroundColor:'#fbbf24'},
+        {label:'機會成本', data:procs.map(p=>p.roi?p.roi.opportunity_cost_yearly:0), backgroundColor:'#f87171'},
+      ]},
+    options:{responsive:true, maintainAspectRatio:false, scales:{x:{stacked:true}, y:{stacked:true}}}
+  });
+}
+
+function renderRoiTable(){
+  const tb = document.querySelector('#roiTable tbody');
+  tb.innerHTML = DATA.processes.map(p=>{
+    const r = p.roi||{};
+    return `<tr>
+      <td>${p.seq}</td><td>${p.name||'-'}</td>
+      <td>${money(r.time_cost_yearly)}</td>
+      <td>${money(r.error_cost_yearly)}</td>
+      <td>${money(r.opportunity_cost_yearly)}</td>
+      <td><input type="number" class="form-control form-control-sm" style="width:70px" value="${r.saving_pct||50}" data-pid="${p.id}" data-field="saving_pct"></td>
+      <td><b>${money(r.annual_potential_benefit)}</b></td>
+      <td>${r.difficulty_score!=null?r.difficulty_score:'-'}</td>
+      <td>${r.priority||'-'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderDetails(){
+  const el = document.getElementById('processDetails');
+  el.innerHTML = DATA.processes.map(p=>{
+    const steps = p.steps||[];
+    const ups = p.uploads||[];
+    const det = p.details||{};
+
+    // Build branch-id → branch info map for labeling child steps
+    const branchMap = {};
+    steps.forEach(s => {
+      (s.branches||[]).forEach(b => { branchMap[b.id] = b; });
+    });
+
+    const stepsHtml = steps.length ? `<ol class="small mb-0">` + steps.map(s => {
+      const tags = [];
+      if(s.is_decision) tags.push('<span class="badge bg-primary">決策點</span>');
+      if(s.is_merge) tags.push('<span class="badge bg-success">合流點</span>');
+      if(s.branch_id && branchMap[s.branch_id]) tags.push(`<span class="badge bg-warning text-dark">分支${branchMap[s.branch_id].branch_no}</span>`);
+      let branchesHtml = '';
+      if(s.is_decision && s.branches && s.branches.length){
+        branchesHtml = '<ul class="small text-muted ms-3">' + s.branches.map(b => {
+          const target = b.is_endpoint ? '<span class="text-danger">[結束]</span>'
+            : (b.merge_to_step_no ? `→ 合流至步驟 ${b.merge_to_step_no}` : '');
+          return `<li>分支${b.branch_no}：${b.condition_desc||'-'} ${target}</li>`;
+        }).join('') + '</ul>';
+      }
+      return `<li>${s.step_name||'-'} <span class="text-muted">(${s.tool_used||'-'} · ${s.judgment_level})</span> ${tags.join(' ')}${branchesHtml}</li>`;
+    }).join('') + '</ol>' : '<span class="small text-muted">無</span>';
+
+    return `<div class="card-panel">
+      <h6 class="text-muted mb-2"><i class="bi bi-diagram-3 me-1"></i>流程 #${p.seq}：${p.name||'-'}</h6>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="small text-muted">步驟拆解</div>
+          ${stepsHtml}
+          <div class="small text-muted mt-1">自動化現況：${det.automation_current||'-'}</div>
+          <div class="small text-muted">例外處理：${det.exception_handling||'-'}</div>
+        </div>
+        <div class="col-md-6">
+          <div class="small text-muted">附件</div>
+          ${ups.length? ups.map(u=>`<div class="small"><a href="/api/uploads/${u.id}/download" target="_blank"><i class="bi bi-paperclip"></i> ${u.original_name}</a> <span class="text-muted">${(u.size/1024).toFixed(0)}KB</span></div>`).join('') : '<span class="small text-muted">無附件</span>'}
+          <div class="small text-muted mt-2">痛點：${p.pain_points||'-'}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderGateForm(){
+  const g = DATA.gate_check || {};
+  document.getElementById('gConclusion').value = g.conclusion || 'suitable';
+  document.getElementById('gReason').value = g.recommendation_reason || '';
+  const sel = document.getElementById('gPilot');
+  sel.innerHTML = DATA.processes.map(p=>`<option value="${p.id}" ${g.recommended_pilot_process_id===p.id?'selected':''}>${p.name||'流程'+p.seq}</option>`).join('');
+}
+
+document.getElementById('recalcBtn').onclick = async ()=>{
+  try{
+    // recalc all ROI with current saving_pct inputs
+    const inputs = document.querySelectorAll('#roiTable input[data-pid]');
+    for(const inp of inputs){
+      const pid = parseInt(inp.dataset.pid);
+      await api('/api/roi','POST',{ process_id: pid, mode:'score', saving_pct: parseFloat(inp.value) });
+    }
+    DATA = await api('/api/surveys/'+sid+'/full');
+    renderRoiTable(); renderCharts(); renderGate();
+    alert('ROI 已重新試算');
+  }catch(e){ alert('錯誤：'+e.message); }
+};
+
+document.getElementById('saveGateBtn').onclick = async ()=>{
+  try{
+    await api('/api/gate','POST',{
+      survey_id: parseInt(sid),
+      conclusion: document.getElementById('gConclusion').value,
+      recommended_pilot_process_id: parseInt(document.getElementById('gPilot').value),
+      recommendation_reason: document.getElementById('gReason').value,
+    });
+    DATA = await api('/api/surveys/'+sid+'/full');
+    renderGate();
+    alert('結論已儲存');
+  }catch(e){ alert('錯誤：'+e.message); }
+};
+
+if(sid) load(); else document.getElementById('loading').textContent='缺少問卷 id';
+</script>
+</body>
+</html>

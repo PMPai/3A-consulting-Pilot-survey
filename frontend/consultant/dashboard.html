@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>顧問端 — 問卷總覽</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+  :root{--brand:#2563eb;--brand-dark:#1e40af;--soft:#f1f5f9;}
+  body{background:var(--soft);font-family:"Microsoft JhengHei","PingFang TC",system-ui,sans-serif;}
+  .topbar{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;}
+  .tree-node{cursor:pointer;padding:.35rem .6rem;border-radius:6px;font-size:.92rem;}
+  .tree-node:hover{background:#eff6ff;}
+  .tree-node.active{background:var(--brand);color:#fff;}
+  .tree-company{font-weight:600;color:#0f172a;}
+  .card-hover:hover{box-shadow:0 4px 14px rgba(0,0,0,.08);transform:translateY(-2px);}
+  .stat-pill{font-size:.75rem;padding:.2rem .6rem;border-radius:999px;}
+</style>
+</head>
+<body>
+<div class="topbar py-3 px-4 mb-3 d-flex justify-content-between align-items-center">
+  <div><h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>顧問端 — 問卷總覽</h5><small class="opacity-75">Stage 1 評估系統</small></div>
+  <a href="/" class="btn btn-sm btn-light">返回首頁</a>
+</div>
+
+<div class="container">
+  <div class="row g-3">
+    <!-- Tree nav -->
+    <div class="col-md-3">
+      <div class="bg-white rounded-3 p-3 shadow-sm" style="position:sticky;top:1rem;">
+        <h6 class="mb-2 text-muted"><i class="bi bi-diagram-2 me-1"></i>樹狀導覽</h6>
+        <div id="tree"></div>
+      </div>
+    </div>
+
+    <!-- Main list -->
+    <div class="col-md-9">
+      <div class="bg-white rounded-3 p-4 shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">所有問卷</h5>
+          <div>
+            <input id="search" class="form-control form-control-sm" placeholder="搜尋公司/部門..." style="width:220px;display:inline-block;">
+          </div>
+        </div>
+        <div id="statsRow" class="row g-2 mb-3"></div>
+        <div id="list" class="row g-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let surveys = [], filter = '';
+async function api(p){ const r = await fetch(p); if(!r.ok) throw new Error('err'); return r.json(); }
+
+async function load(){
+  surveys = await api('/api/surveys');
+  renderStats();
+  renderTree();
+  renderList();
+}
+
+function renderStats(){
+  const total = surveys.length;
+  const submitted = surveys.filter(s=>s.status==='submitted').length;
+  const draft = total - submitted;
+  document.getElementById('statsRow').innerHTML = `
+    <div class="col"><div class="p-2 bg-light rounded text-center"><div class="fs-4 fw-bold">${total}</div><small class="text-muted">問卷總數</small></div></div>
+    <div class="col"><div class="p-2 bg-light rounded text-center"><div class="fs-4 fw-bold text-success">${submitted}</div><small class="text-muted">已送出</small></div></div>
+    <div class="col"><div class="p-2 bg-light rounded text-center"><div class="fs-4 fw-bold text-warning">${draft}</div><small class="text-muted">草稿中</small></div></div>
+  `;
+}
+
+function renderTree(){
+  // group by company
+  const groups = {};
+  surveys.forEach(s=>{ const c=s.company||'(未填公司)'; (groups[c]=groups[c]||[]).push(s); });
+  let html = '';
+  for(const c in groups){
+    html += `<div class="tree-company mt-1"><i class="bi bi-building me-1"></i>${c}</div>`;
+    groups[c].forEach(s=>{
+      html += `<div class="tree-node ms-3" data-id="${s.id}"><i class="bi bi-diagram-3 me-1"></i>${s.dept_name||'(未填部門)'}</div>`;
+    });
+  }
+  if(!html) html = '<div class="text-muted small p-2">尚無問卷</div>';
+  document.getElementById('tree').innerHTML = html;
+  document.querySelectorAll('.tree-node').forEach(n=>{
+    n.onclick = ()=>{ document.querySelectorAll('.tree-node').forEach(x=>x.classList.remove('active')); n.classList.add('active'); location.href='/consultant/detail?id='+n.dataset.id; };
+  });
+}
+
+function renderList(){
+  const f = filter.toLowerCase();
+  const arr = surveys.filter(s=> !f || (s.company||'').toLowerCase().includes(f) || (s.dept_name||'').toLowerCase().includes(f));
+  if(!arr.length){ document.getElementById('list').innerHTML = '<div class="col text-muted p-4 text-center">尚無問卷資料</div>'; return; }
+  document.getElementById('list').innerHTML = arr.map(s=>`
+    <div class="col-md-6">
+      <a href="/consultant/detail?id=${s.id}" class="text-decoration-none text-dark">
+        <div class="card-hover bg-light rounded-3 p-3 border">
+          <div class="d-flex justify-content-between">
+            <div><div class="fw-bold">${s.company||'(未填)'}</div><div class="text-muted small">${s.dept_name||''}</div></div>
+            <span class="stat-pill ${s.status==='submitted'?'bg-success text-white':'bg-warning text-dark'}">${s.status==='submitted'?'已送出':'草稿'}</span>
+          </div>
+          <div class="small text-muted mt-2"><i class="bi bi-person me-1"></i>${s.respondent_name||'-'}　<i class="bi bi-calendar ms-2 me-1"></i>${s.interview_date||'-'}</div>
+          <div class="small text-muted"><i class="bi bi-person-badge me-1"></i>顧問：${s.consultant_name||'-'}</div>
+        </div>
+      </a>
+    </div>
+  `).join('');
+}
+
+document.getElementById('search').oninput = e=>{ filter=e.target.value; renderList(); };
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.venv/
+venv/
+env/
+ENV/
+
+# SQLite database (regenerated on startup; user data stays local)
+backend/survey.db
+backend/survey.db-journal
+backend/survey.db-wal
+backend/survey.db-shm
+
+# Uploaded files (user data, kept local)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Server logs
+backend/server_err.log
+backend/server_out.log
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Opencode internal
+.opencode/
+
+# Keep the uploads dir tracked but empty
